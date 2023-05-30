@@ -30,11 +30,17 @@ $router = new Router('connect');
 $router->route('post', '/login', 'Login', ['controller' => 'UsersAuthController', 'action' => 'login'], ['options']);
 $router->route('post', '/register', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register'], ['options']);
 
+// account
+$router->route('post', '/update', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register'], ['options']);
+$router->route('post', '/deactivate', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register'], ['options']);
+$router->route('post', '/activate', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register'], ['options']);
+$router->route('post', '/delete', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register'], ['options']);
+
 // profile
 $router->route('get', '/?user', 'User', ['controller' => 'UsersController', 'action' => 'getUser'], ['options']);
 
 // connections
 $router->route('get', '/connections', 'User', ['controller' => 'UsersController', 'action' => 'getUsers'], ['options']);
-$router->route('get', '/follow/?id', 'User', ['controller' => 'FriendsController', 'action' => 'follow'], ['options']);
+$router->route('post', '/follow/?id', 'User', ['controller' => 'FriendsController', 'action' => 'follow'], ['options']);
 
 $router->serve();
