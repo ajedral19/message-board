@@ -16,7 +16,7 @@ class Friends
 
     public static function followers($connection, $id)
     {
-        $query = "SELECT LEFT(users.id, 8) as id, users.first_name, users.last_Name FROM users LEFT JOIN friends ON users.id = friends.user_friend_id WHERE friends.user_id LIKE CONCAT(:a, '%');";
+        $query = "SELECT LEFT(users.id, 8) as id, users.first_name, users.last_Name FROM users LEFT JOIN friends ON users.id = friends.user_id WHERE friends.user_friend_id LIKE CONCAT(:a, '%');";
         $stmt = $connection->prepare($query);
         $stmt->bindParam(':a', $id);
 
@@ -28,7 +28,7 @@ class Friends
 
     public static function following($connection, $id)
     {
-        $query = "SELECT LEFT(users.id, 8) as id, users.first_name, users.last_Name FROM users LEFT JOIN friends ON users.id = friends.user_id WHERE friends.user_friend_id LIKE CONCAT(:a, '%');";
+        $query = "SELECT LEFT(users.id, 8) as id, users.first_name, users.last_Name FROM users LEFT JOIN friends ON users.id = friends.user_friend_id WHERE friends.user_id LIKE CONCAT(:a, '%');";
         $stmt = $connection->prepare($query);
         $stmt->bindParam(':a', $id);
 
