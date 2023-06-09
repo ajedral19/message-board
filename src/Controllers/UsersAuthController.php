@@ -5,7 +5,10 @@ use function PHPSTORM_META\type;
 class UsersAuthController
 {
 
-    public static function login($view, $connection = null)
+    /**
+     * 
+     */
+    public static function login($method, $view, $connection = null)
     {
         $data = json_decode(file_get_contents("php://input"));
         $params = ['username', 'password'];
@@ -25,21 +28,24 @@ class UsersAuthController
 
         // send response to cookie/session/cache/header
         // header('location: http://localhost/message_board_new/user');
-        header('user_id:' . $user['id']);
         return $view($user);
 
         // return $user;
     }
 
-    public static function register($view, $connection)
+    /**
+     * 
+     */
+    public static function register($method, $view, $connection)
     {
-        // $data = json_decode(file_get_contents("php://input"));
+
+        $data = json_decode(file_get_contents("php://input"));
+        // echo json_encode($data);
+        // return;
         // $data =  explode(",", $_REQUEST['data']);
         // $data =  json_decode($_REQUEST['data']);
-        // echo json_encode($_FILES);
-        self::unblobImage(self::blobImage());
-        return;
-        $params = ['firstname', 'lastname', 'username', 'email', 'password', 'repassword'];
+
+        $params = ['firstname', 'lastname', 'username', 'email', 'password', 'confirm_password'];
         $empty_fields = Utils::validateField($params, $data);
 
         if (count($empty_fields)) {
@@ -60,7 +66,7 @@ class UsersAuthController
             return;
         }
 
-        if ($data->password !== $data->repassword) {
+        if ($data->password !== $data->confirm_password) {
             $response = Utils::sendErr("Paasword doesn't match");
             print($response);
             return;
@@ -88,7 +94,7 @@ class UsersAuthController
         $file_content = fread($fp, $size);
         fclose($fp);
         $base64 = 'data/image/' . $format . ';base64' . base64_encode($file_content);
-        
+
         return $base64;
 
         $path = "c:/xampp/htdocs/message_board_new/src/assets/images/inqn5n0m6bufa_230.jpg";
@@ -106,13 +112,14 @@ class UsersAuthController
         file_put_contents('image.jpg', $data);
     }
 
-    private static function unblobImage($base64){
+    private static function unblobImage($base64)
+    {
         list($info, $blob) = explode(';', $base64);
         list(, $data) = explode('base64/', $blob);
-        list(,$type,$format) = explode('/', $info);
+        list(, $type, $format) = explode('/', $info);
 
         $imgData = base64_decode($data);
-        file_put_contents(uniqid().$format, $imgData);
+        file_put_contents(uniqid() . $format, $imgData);
 
         // $imageData = base64_decode($imageData);
         // file_put_contents($filename, $imageData);

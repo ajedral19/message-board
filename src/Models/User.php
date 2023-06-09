@@ -30,12 +30,12 @@ class User
      * @return object
      * @author #
      */
-    public static function getUser($cn, $id)
+    public static function getUser($cn, $username)
     {
-        $query = "SELECT LEFT(id, 8) as id, first_name as firstname, last_name as lastname, user_name as username, user_email as email, user_photo as photo, create_at as created_at FROM users where user_name like ?";
+        $query = "SELECT LEFT(id, 8) as id, first_name as firstname, last_name as lastname, user_name as username, user_email as email, create_at as created_at FROM users where user_name like ?";
         $stmt = $cn->prepare($query);
 
-        $params = ["$id%"];
+        $params = ["$username%"];
 
         Execute($cn, $stmt, $params);
 

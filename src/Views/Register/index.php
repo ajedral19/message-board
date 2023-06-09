@@ -2,7 +2,8 @@
 
 function Register($payload)
 {
-    echo json_encode($payload);
+    $data = Utils::send($payload);
+    print($data);
     return;
     // $response = [];
     // $data = json_decode(file_get_contents('php://input'));

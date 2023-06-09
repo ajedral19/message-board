@@ -2,7 +2,7 @@
 
 class UsersController
 {
-    public static function getUser($view, $connection)
+    public static function getUser($method, $view, $connection)
     {
         $params = Utils::extracParams($_SERVER['QUERY_STRING']);
 

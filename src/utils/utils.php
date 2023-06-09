@@ -112,4 +112,13 @@ class Utils extends ResponseHanler
         fwrite($fp, $log);
         fclose($fp);
     }
+
+    /**
+     * @return
+     */
+    public static function requestMethod($method)
+    {
+        $method = strtoupper($method);
+        return $method === $_SERVER['REQUEST_METHOD'];
+    }
 }

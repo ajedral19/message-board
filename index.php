@@ -27,20 +27,23 @@ header('Content-Type: application/json');
 // routes
 $router = new Router('connect');
 // auth
-$router->route('post', '/login', 'Login', ['controller' => 'UsersAuthController', 'action' => 'login'], ['options']);
-$router->route('post', '/register', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register'], ['options']);
+$router->route('post', '/login', 'Login', ['controller' => 'UsersAuthController', 'action' => 'login']);
+$router->route('post', '/register', 'Register', ['controller' => 'UsersAuthController', 'action' => 'register']);
 
-// account
-$router->route('post', '/update', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register'], ['options']);
-$router->route('post', '/deactivate', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register'], ['options']);
-$router->route('post', '/activate', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register'], ['options']);
-$router->route('post', '/delete', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register'], ['options']);
+// account - ok but change view
+$router->route('post', '/update', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register']);
+$router->route('post', '/deactivate', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register']);
+// todo
+$router->route('post', '/activate', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register']);
+$router->route('post', '/delete', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register']);
 
-// profile
-$router->route('get', '/?user', 'User', ['controller' => 'UsersController', 'action' => 'getUser'], ['options']);
+// profile - ok
+$router->route('get', '/?user', 'User', ['controller' => 'UsersController', 'action' => 'getUser']);
 
-// connections
-$router->route('get', '/connections', 'User', ['controller' => 'UsersController', 'action' => 'getUsers'], ['options']);
-$router->route('post', '/follow/?id', 'User', ['controller' => 'FriendsController', 'action' => 'follow'], ['options']);
+// connections - ok
+$router->route('get', '/connections/followers', 'User', ['controller' => 'FriendsController', 'action' => 'followers']);
+$router->route('get', '/connections/following', 'User', ['controller' => 'FriendsController', 'action' => 'following']);
+// still need conditions
+$router->route('post', '/follow/?id', 'User', ['controller' => 'FriendsController', 'action' => 'follow']);
 
 $router->serve();

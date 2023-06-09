@@ -64,3 +64,19 @@ SELECT users.user_name FROM users INNER JOIN friends ON users.id=friends.user_fr
 insert into friends (user_id, user_friend_id) values (select id from users where id like "", select id from users where id like "");
 
 select id from users
+
+INSERT INTO friends(user_id, user_friend_id)
+VALUES(
+    SELECT
+        id
+    FROM
+        users
+    WHERE
+        id LIKE '55b049b3%',
+    SELECT
+        id
+    FROM
+        users
+    WHERE
+        id LIKE '186bd41e%'
+);
