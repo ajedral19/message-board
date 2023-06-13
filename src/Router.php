@@ -41,8 +41,12 @@ class Router
      * @param string view function
      * @param array module ["controller" => "", "action" => ""]
      */
-    public function route(string $method, string $uri, string $view, array $module)
+    public function route(string $method, string $uri, string $view, ?array $module = null)
     {
+        // if(is_null($module) || $uri === '/'){
+        //     $view('Oops! Page out of reach');
+        //     return;
+        // }
         // validate method
         $methods = METHODS;
         $method = strtolower($method);

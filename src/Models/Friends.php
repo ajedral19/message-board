@@ -23,7 +23,7 @@ class Friends
         Execute($connection, $stmt);
 
         $followers = $stmt->fetchAll(PDO::FETCH_OBJ);
-        return [$followers];
+        return $followers;
     }
 
     public static function following($connection, $id)
@@ -34,7 +34,7 @@ class Friends
 
         Execute($connection, $stmt);
 
-        $followers = $stmt->fetchAll(PDO::FETCH_OBJ);
-        return [$followers];
+        $following = $stmt->fetchAll(PDO::FETCH_OBJ);
+        return $following;
     }
 }

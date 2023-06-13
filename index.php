@@ -7,16 +7,19 @@ require __DIR__ . '/src/Router.php';
 require __DIR__ . '/src/Models/User.php';
 require __DIR__ . '/src/Models/Friends.php';
 require __DIR__ . '/src/Models/UserAuth.php';
+require __DIR__ . '/src/Models/Image.php';
 require __DIR__ . '/src/Models/Execute.php';
 // controllers
 require __DIR__ . '/src/Controllers/UsersAuthController.php';
 require __DIR__ . '/src/Controllers/UsersController.php';
 require __DIR__ . '/src/Controllers/FriendsController.php';
+require __DIR__ . '/src/Controllers/ImageController.php';
 // views
 include __DIR__ . '/src/Views/Login/index.php';
 include __DIR__ . '/src/Views/Register/index.php';
-include __DIR__ . '/src/Views/User/index.php';
+include __DIR__ . '/src/Views/User.php';
 include __DIR__ . '/src/Views/Error.php';
+include __DIR__ . '/src/Views/Image.php';
 
 // default headers
 header('Content-Type: application/json');
@@ -26,9 +29,11 @@ header('Content-Type: application/json');
 
 // routes
 $router = new Router('connect');
+
 // auth
-$router->route('post', '/login', 'Login', ['controller' => 'UsersAuthController', 'action' => 'login']);
-$router->route('post', '/register', 'Register', ['controller' => 'UsersAuthController', 'action' => 'register']);
+$router->route('post', '/login', 'User', ['controller' => 'UsersAuthController', 'action' => 'login']);
+$router->route('post', '/register', 'User', ['controller' => 'UsersAuthController', 'action' => 'register']);
+$router->route('post', '/display-picture/upload', 'User', ['controller' => 'ImageController', 'action' => 'upload']);
 
 // account - ok but change view
 $router->route('post', '/update', 'Login', ['controller' => 'UsersAuthController', 'action' => 'register']);
@@ -45,5 +50,7 @@ $router->route('get', '/connections/followers', 'User', ['controller' => 'Friend
 $router->route('get', '/connections/following', 'User', ['controller' => 'FriendsController', 'action' => 'following']);
 // still need conditions
 $router->route('post', '/follow/?id', 'User', ['controller' => 'FriendsController', 'action' => 'follow']);
+
+$router->route('get', '/?image', 'Image', ['controller' => 'ImageController', 'action' => 'get_image']);
 
 $router->serve();

@@ -80,3 +80,14 @@ VALUES(
     WHERE
         id LIKE '186bd41e%'
 );
+
+
+
+CREATE TABLE profile_picture (
+	image_id tinyint(3) not null default '0',
+	image_type VARCHAR(25) not null default '',
+	image blob not null,
+	image_size varchar(25) not null default '',
+	image_ctgy varchar(25) not null default '',
+	image_name varchar(50) not null default ''
+);

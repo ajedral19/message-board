@@ -21,6 +21,10 @@ class FriendsController
         $id = apache_request_headers()['user_id'];
         $followers = Friends::followers($connection(), $id);
 
+        foreach ($followers as $key => $follower) {
+            $follower->image = Utils::get_image_uri($follower->id);
+        }
+
         return $view($followers);
     }
 
@@ -29,8 +33,12 @@ class FriendsController
      */
     public static function following($method, $view, $connection)
     {
-        $user = apache_request_headers()['user_id'];
-        $following = Friends::following($connection(), $user);
+        $id = apache_request_headers()['user_id'];
+        $following = Friends::following($connection(), $id);
+
+        foreach ($following as $key => $user) {
+            $user->image = Utils::get_image_uri($user->id);
+        }
 
         return $view($following);
     }

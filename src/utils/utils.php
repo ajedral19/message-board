@@ -121,4 +121,45 @@ class Utils extends ResponseHanler
         $method = strtoupper($method);
         return $method === $_SERVER['REQUEST_METHOD'];
     }
+
+    public static function encode_image($path, $name, $type)
+    {
+        $bloberize = file_get_contents($path);
+        $base64 = $name . "\\" . $type . "\\" . base64_encode($bloberize);
+        return $base64;
+    }
+
+    public static function decode_image($encoded_image)
+    {
+        $data = explode('\\', $encoded_image);
+        $result = [
+            "name" => $data[0],
+            "type" => $data[1],
+            "base64" => ($data[2])
+        ];
+        return $result;
+    }
+
+    public static function encode_id($id)
+    {
+        return rtrim(strtr(base64_encode($id), '+/', '-_'), '=');
+    }
+
+    public static function decode_id($base64)
+    {
+        $id = base64_decode(str_pad(strtr($base64, '-_', '+/'), strlen($base64) % 4, '=', STR_PAD_RIGHT));
+        return $id;
+    }
+
+    public static function get_image_uri($id)
+    {
+        $slug = self::encode_id($id);
+        $domain = explode('/', $_SERVER['REQUEST_URI'])[1];
+        $server = $_SERVER['SERVER_NAME'];
+        $request_scheme = $_SERVER['REQUEST_SCHEME'];
+
+        $url = $request_scheme . "://" . $server . "/" . $domain . "/?image=" . $slug;
+
+        return $url;
+    }
 }
