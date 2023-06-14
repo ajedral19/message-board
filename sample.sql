@@ -91,3 +91,4 @@ CREATE TABLE profile_picture (
 	image_ctgy varchar(25) not null default '',
 	image_name varchar(50) not null default ''
 );
+

@@ -11,7 +11,7 @@ class Friends
 
         Execute($connection, $stmt);
 
-        return;
+        return !$stmt->fetch(PDO::FETCH_OBJ);
     }
 
     public static function followers($connection, $id)

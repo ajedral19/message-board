@@ -64,8 +64,25 @@ class Router
         // echo json_encode($this->routes);
     }
 
-    public function serve()
+    private static function authorize()
     {
+        $secret = "secret key";
+        $headers = getallheaders();
+        echo json_encode($headers);
+
+    }
+
+    public function serve(bool $authorize_access = false)
+    {
+        $authorized = true;
+
+        if ($authorize_access) {
+            self::authorize();
+        }
+
+        if (!$authorized)
+            return Error('Unauthorized access', 403);
+
         foreach ($this->routes as $index => $route) {
             preg_match("/!?\/+\w+(.*$)/", $_SERVER['REQUEST_URI'], $matches);
             $uri = preg_replace("/=\w+/", '', $matches[1]);

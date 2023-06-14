@@ -20,22 +20,19 @@ class UserAuth
     {
         $query = "SELECT id, user_password as password FROM users WHERE user_name = :a";
         $stmt = $cn->prepare($query);
-
         $stmt->bindParam(':a', $data->username);
 
         Execute($cn, $stmt);
 
         $user = $stmt->fetch(PDO::FETCH_OBJ);
 
-        if (!$user) return; // ?
+        if (!$user) return ["user" => 1];
 
-        // match password
-        if (!password_verify($data->password, $user->password)) return;
+        if (!password_verify($data->password, $user->password)) return ["password" => 1];
 
-
-        return [
-            "id" => $user->id = Utils::shortenID($user->id)
-        ];
+        $id = $user->id = Utils::shortenID($user->id);
+        
+        return ["id" => $id];
     }
 
     /**
@@ -46,8 +43,6 @@ class UserAuth
      */
     public function register($password)
     {
-        // echo json_encode(User::doExists($this->connection, $this->data->email, 'email'));
-        // return;
         $query = "INSERT INTO users (first_name, last_name, user_name, user_email, user_password) VALUES (:a, :b, :c, :d, :e)";
         $stmt = $this->connection->prepare($query);
 
@@ -61,9 +56,7 @@ class UserAuth
 
         Execute($this->connection, $stmt);
 
-        // verify if user have successfully registered
-
-        return true;
+        return !$stmt->fetch(PDO::FETCH_OBJ);
     }
 
     public function __destruct()

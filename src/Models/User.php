@@ -25,19 +25,19 @@ class User
     }
 
     /**
-     * @param object $cn database connection
+     * @param object $connection database connection
      * @param string $id
      * @return object
      * @author #
      */
-    public static function getUser($cn, $username)
+    public static function profile($connection, $username)
     {
         $query = "SELECT LEFT(id, 8) as id, first_name as firstname, last_name as lastname, user_name as username, user_email as email, create_at as created_at FROM users where user_name like ?";
-        $stmt = $cn->prepare($query);
 
+        $stmt = $connection->prepare($query);
         $params = ["$username%"];
 
-        Execute($cn, $stmt, $params);
+        Execute($connection, $stmt, $params);
 
         $user = $stmt->fetch(PDO::FETCH_OBJ);
 
@@ -46,98 +46,19 @@ class User
         return [$user];
     }
 
-    /**
-     * @param object $cn database connection
-     * @return object
-     * @author #
-     */
-    public static function getUsers($cn)
+    public static function save_update($connection, $id, $data)
     {
-        // $query = "SELECT LEFT(id, 8) as id, first_name AS firstname, last_name AS lastname, user_name AS username, user_email AS email, user_photo as photo, create_at as created_at FROM users";
-        $query = "SELECT users.user_name FROM users INNER JOIN friends ON users.id=friends.user_friend_id WHERE friends.user_id LIKE ?";
-        $stmt = $cn->prepare($query);
+        $query = "UPDATE users SET first_name = ?, last_name = ? WHERE id LIKE ?";
+        $stmt = $connection->prepare($query);
+        $params = [$data->firstname, $data->lastname, "$id%"];
 
-        Execute($cn, $stmt);
+        Execute($connection, $stmt, $params);
 
-        $users = $stmt->fetchall(PDO::FETCH_OBJ);
-
-        if (!$users) return;
-
-        return $users;
+        return !$stmt->fetch(PDO::FETCH_OBJ);
     }
 
-    /**
-     * @param
-     * @return
-     * @author #
-     */
-    public function updateUser($data)
-    {
-        // validate empty properties
-        $this->firstname = $data->firstname;
-        $this->lastname = $data->lastname;
-        $this->username = $data->username;
-        $this->email = $data->email;
-        $this->photo = $data->photo;
-    }
-
-    /**
-     * @param
-     * @return
-     * @author #
-     */
-    public function saveUpdateUser($data)
-    {
-        $query = "UPDATE users SET first_name = :a, last_name = :b, user_name = :c, user_email = :d, user_photo = :e WHERE id like ?";
-        $stmt = $this->connection->prepare($query);
-
-        $id = $this->id;
-        $params = ["$id%"];
-
-        $stmt->bindParam(':a', $this->firstname);
-        $stmt->bindParam(':a', $this->lastname);
-        $stmt->bindParam(':a', $this->username);
-        $stmt->bindParam(':a', $this->email);
-        $stmt->bindParam(':a', $this->photo);
-
-        Execute($this->connection, $stmt, $params);
-
-        $user = $stmt->fetch(PDO::FETCH_OBJ);
-
-        if ($user) return;
-
-        return $user;
-    }
-
-    /**
-     * @param
-     * @return
-     * @author #
-     */
-    public function deactivateUser($id)
-    {
-    }
-
-    /**
-     * @param
-     * @return
-     * @author #
-     */
-    public function reactivateUser($id)
-    {
-    }
-
-    /**
-     * @param
-     * @return
-     * @author #
-     */
-    public function removeUser($id)
-    {
-        return [];
-    }
-
-    public static function doExists($cn, $identifier, string $param = "username" | "email")
+    // generic method
+    public static function doExists($connection, $identifier, string $param = "username" | "email")
     {
         $col = "";
 
@@ -149,11 +70,10 @@ class User
 
         $query = "SELECT CASE WHEN EXISTS(SELECT 1 FROM users WHERE $col = :a ) THEN 1 ELSE 0 END AS result";
 
-        $stmt = $cn->prepare($query);
-
+        $stmt = $connection->prepare($query);
         $stmt->bindParam(':a', $identifier);
 
-        Execute($cn, $stmt);
+        Execute($connection, $stmt);
 
         $result =  $stmt->fetch(PDO::FETCH_ASSOC)['result'];
 

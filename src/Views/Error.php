@@ -1,7 +1,7 @@
 <?php 
 
-function Error($payload){
+function Error($msg, $status_code){
 
-    http_response_code(404);
-    echo $payload;
+    http_response_code($status_code);
+    print Utils::sendErr($msg);
 }

@@ -7,11 +7,14 @@ class Image
         $stmt = $connection->prepare($query);
         $stmt->bindParam(':a', $data);
         $stmt->bindParam(':b', $id);
-        
+
         Execute($connection, $stmt);
+        
+        return !$stmt->fetch(PDO::FETCH_OBJ);
     }
 
-    public static function get_image($connection, $id){
+    public static function get_image($connection, $id)
+    {
         $query = "SELECT user_photo as photo from users WHERE id LIKE CONCAT(:a, '%')";
         $stmt = $connection->prepare($query);
         $stmt->bindParam(':a', $id);

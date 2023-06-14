@@ -20,8 +20,16 @@ class UsersAuthController
             return;
         }
 
-        if (!$user = UserAuth::login($connection(), $data)) {
-            $response = Utils::sendErr('Incorrect username or password');
+        $user = UserAuth::login($connection(), $data);
+
+        if (isset($user['user']) && $user['user']) {
+            $response = Utils::sendErr('user does not exist');
+            print($response);
+            return;
+        }
+
+        if (isset($user['password']) && $user['password']) {
+            $response = Utils::sendErr('password is incorrect');
             print($response);
             return;
         }
@@ -68,15 +76,19 @@ class UsersAuthController
         }
 
         $user = new UserAuth($connection(), $data);
+        $register = $user->register($data->password);
 
-        $user->register($data->password);
+        if (!$register)
+            return Error('Unable to register', 403);
 
-        $view($user);
+        $response = [
+            "registered" => true
+        ];
 
-        return true;
+        return $view($response);
     }
 
-    public static function upload_profile_picture()
+    public static function authorizeUser()
     {
     }
 }

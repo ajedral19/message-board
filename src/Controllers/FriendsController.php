@@ -10,7 +10,14 @@ class FriendsController
         $params = Utils::extracParams($_SERVER['QUERY_STRING']);
         $user = apache_request_headers()['user_id'];
 
-        return $view(Friends::follow($connection(), $user, $params[0]['id']));
+        $followed = Friends::follow($connection(), $user, $params[0]['id']);
+
+        if (!$followed)
+            return Error('You are already following', 403);
+
+        $response = ['following' => true];
+
+        return $view($response);
     }
 
     /**
@@ -21,9 +28,8 @@ class FriendsController
         $id = apache_request_headers()['user_id'];
         $followers = Friends::followers($connection(), $id);
 
-        foreach ($followers as $key => $follower) {
+        foreach ($followers as $key => $follower)
             $follower->image = Utils::get_image_uri($follower->id);
-        }
 
         return $view($followers);
     }
@@ -36,9 +42,8 @@ class FriendsController
         $id = apache_request_headers()['user_id'];
         $following = Friends::following($connection(), $id);
 
-        foreach ($following as $key => $user) {
+        foreach ($following as $key => $user)
             $user->image = Utils::get_image_uri($user->id);
-        }
 
         return $view($following);
     }
