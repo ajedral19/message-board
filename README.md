@@ -7,7 +7,13 @@
 
 
 ## Adding Routes
-`$router->route('method', '/uri', 'View', ['controller' => 'Controller', 'action' => 'controllerStaticMethod'])`
+```
+$module = [
+  'controller' => 'Controller',
+  'action' => 'controllerStaticMethod'
+];
+$router->route('method', '/uri', 'View', $module);
+```
 - method
 - /uri
 - View
