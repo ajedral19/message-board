@@ -1,4 +1,6 @@
 <?php
+declare(strict_types = 1);
+
 require __DIR__ . '/imports.php';
 
 // default headers
@@ -7,8 +9,8 @@ header('Content-Type: application/json');
 $router = new Router('connect');
 
 // auth
-$router->route('post', '/login', 'User', ['controller' => 'UsersAuthController', 'action' => 'login']);
-$router->route('post', '/register', 'Register', ['controller' => 'UsersAuthController', 'action' => 'register']);
+$router->route('post', '/login', 'User', ['controller' => 'UsersAuthController', 'action' => 'loginUser']);
+$router->route('post', '/register', 'User', ['controller' => 'UsersAuthController', 'action' => 'registerUser']);
 $router->route('post', '/display-picture/upload', 'User', ['controller' => 'ImageController', 'action' => 'upload']);
 // profile - working
 $router->route('post', '/profile/update', 'User', ['controller' => 'UsersController', 'action' => 'updateProfile']);

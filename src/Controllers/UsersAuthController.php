@@ -1,91 +1,42 @@
 <?php
-
-use function PHPSTORM_META\type;
-
-class UsersAuthController
+class UsersAuthController extends UserAuth
 {
 
-    /**
-     * 
-     */
-    public static function login($method, $view, $connection = null)
+    public static function loginUser($view)
     {
         $data = json_decode(file_get_contents("php://input"));
         $params = ['username', 'password'];
         $empty_fields = Utils::validateField($params, $data);
 
-        if (count($empty_fields)) {
-            $response = Utils::sendErr('Fields cannot be empty');
-            print($response);
-            return;
-        }
+        if (count($empty_fields))
+            return $view(Utils::sendErr('Fields cannot be empty'));
 
-        $user = UserAuth::login($connection(), $data);
-
-        if (isset($user['user']) && $user['user']) {
-            $response = Utils::sendErr('user does not exist');
-            print($response);
-            return;
-        }
-
-        if (isset($user['password']) && $user['password']) {
-            $response = Utils::sendErr('password is incorrect');
-            print($response);
-            return;
-        }
-
-        // send response to cookie/session/cache/header
-        // header('location: http://localhost/message_board_new/user');
-        return $view($user);
-
-        // return $user;
+        return $view(self::login($data));
     }
 
-    /**
-     * 
-     */
-    public static function register($method, $view, $connection)
+    public static function registerUser($view)
     {
         $data = json_decode(file_get_contents("php://input"));
 
         $params = ['firstname', 'lastname', 'username', 'email', 'password', 'confirm_password'];
         $empty_fields = Utils::validateField($params, $data);
 
-        if (count($empty_fields)) {
-            $response = Utils::sendErr('Fields cannot be empty');
-            print($response);
-            return;
-        }
+        if (count($empty_fields))
+            return $view(Utils::sendErr('Fields cannot be empty'));
 
-        if (User::doExists($connection(), $data->email, 'email')) {
-            $response = Utils::sendErr("$data->email already exist.");
-            print($response);
-            return;
-        }
+        if (User::doExists($data->username, 'username'))
+            return $view(Utils::sendErr("$data->username already exist."));
 
-        if (User::doExists($connection(), $data->username, 'username')) {
-            $response = Utils::sendErr("$data->username already exist.");
-            print($response);
-            return;
-        }
+        if (User::doExists($data->email, 'email'))
+            return $view(Utils::sendErr("$data->email already exist."));
 
-        if ($data->password !== $data->confirm_password) {
-            $response = Utils::sendErr("Paasword doesn't match");
-            print($response);
-            return;
-        }
+        if ($data->password !== $data->confirm_password)
+            return $view(Utils::sendErr("Paasword doesn't match"));
 
-        $user = new UserAuth($connection(), $data);
-        $register = $user->register($data->password);
+        $hashed = password_hash($data->password, PASSWORD_DEFAULT);
+        $data->password = $hashed;
 
-        if (!$register)
-            return Error('Unable to register', 403);
-
-        $response = [
-            "registered" => true
-        ];
-
-        return $view($response);
+        return $view(self::register($data));
     }
 
     public static function authorizeUser()

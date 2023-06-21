@@ -1,66 +1,39 @@
 <?php
 
-class User
+class User extends UserSchema
 {
 
-    protected ?object $connection;
-    protected $id = "";
-    private $firstname = "";
-    private $lastname = "";
-    private $username = "";
-    private $email = "";
-    private $photo = "";
-    private $created_at = "";
-
-    public function __construct($connection, $data)
+    public static function profile($username)
     {
-        $this->connection = $connection;
-        $this->id         = $data->id;
-        $this->firstname  = $data->firstname;
-        $this->lastname   = $data->lastname;
-        $this->username   = $data->username;
-        $this->email      = $data->email;
-        $this->photo      = $data->photo;
-        $this->created_at = $data->created_at;
+        $user = self::getUser($username);
+
+        if (!$user)
+            return Utils::sendErr("user not found");
+
+        $user->image = Utils::get_image_uri($user->id);
+
+        return Utils::send([$user]);
     }
 
-    /**
-     * @param object $connection database connection
-     * @param string $id
-     * @return object
-     * @author #
-     */
-    public static function profile($connection, $username)
+    public static function update($data)
     {
-        $query = "SELECT LEFT(id, 8) as id, first_name as firstname, last_name as lastname, user_name as username, user_email as email, create_at as created_at FROM users where user_name like ?";
+        $update = self::updateUser($data);
 
-        $stmt = $connection->prepare($query);
-        $params = ["$username%"];
+        if ($update)
+            return Utils::sendErr('Unable to do profile update');
 
-        Execute($connection, $stmt, $params);
+        $responseData = [
+            "firstname" => $data->firstname,
+            "lastname" => $data->lastname
+        ];
 
-        $user = $stmt->fetch(PDO::FETCH_OBJ);
-
-        if (!$user) return;
-
-        return [$user];
-    }
-
-    public static function save_update($connection, $id, $data)
-    {
-        $query = "UPDATE users SET first_name = ?, last_name = ? WHERE id LIKE ?";
-        $stmt = $connection->prepare($query);
-        $params = [$data->firstname, $data->lastname, "$id%"];
-
-        Execute($connection, $stmt, $params);
-
-        return !$stmt->fetch(PDO::FETCH_OBJ);
+        return Utils::send($responseData);
     }
 
     // generic method
-    public static function doExists($connection, $identifier, string $param = "username" | "email")
+    public static function doExists($identifier, string $param = "username" | "email")
     {
-        $col = "";
+        $col = null;
 
         if ($param === 'username')
             $col = "user_name";
@@ -68,15 +41,11 @@ class User
         if ($param === 'email')
             $col = "user_email";
 
-        $query = "SELECT CASE WHEN EXISTS(SELECT 1 FROM users WHERE $col = :a ) THEN 1 ELSE 0 END AS result";
+        if (!$col)
+            return false;
 
-        $stmt = $connection->prepare($query);
-        $stmt->bindParam(':a', $identifier);
+        $data =  self::userExists($identifier, $col);
 
-        Execute($connection, $stmt);
-
-        $result =  $stmt->fetch(PDO::FETCH_ASSOC)['result'];
-
-        return $result;
+        return $data['result'];
     }
 }

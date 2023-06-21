@@ -1,28 +1,19 @@
 <?php
-class Image
+class Image extends ImageSchema
 {
-    public static function upload($connection, $id, $data)
+    public static function uplaod($id, $data)
     {
-        $query = "UPDATE users SET user_photo = :a WHERE id LIKE CONCAT(:b, '%')";
-        $stmt = $connection->prepare($query);
-        $stmt->bindParam(':a', $data);
-        $stmt->bindParam(':b', $id);
+        $upload = self::uploadImage($id, $data);
 
-        Execute($connection, $stmt);
-        
-        return !$stmt->fetch(PDO::FETCH_OBJ);
+        if ($upload)
+            return Utils::sendErr('Unable to upload image');
+
+        return Utils::send([Utils::get_image_uri($id)]);
     }
 
-    public static function get_image($connection, $id)
+    public static function get_image($id)
     {
-        $query = "SELECT user_photo as photo from users WHERE id LIKE CONCAT(:a, '%')";
-        $stmt = $connection->prepare($query);
-        $stmt->bindParam(':a', $id);
-
-        Execute($connection, $stmt);
-
-        $image = $stmt->fetch(PDO::FETCH_OBJ);
-
-        return $image;
+        $image = self::getImage($id);
+        return Utils::decode_image($image->photo);
     }
 }

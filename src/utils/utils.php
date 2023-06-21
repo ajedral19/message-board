@@ -122,10 +122,10 @@ class Utils extends ResponseHanler
         return $method === $_SERVER['REQUEST_METHOD'];
     }
 
-    public static function encode_image($path, $name, $type)
+    public static function encode_image($data)
     {
-        $bloberize = file_get_contents($path);
-        $base64 = $name . "\\" . $type . "\\" . base64_encode($bloberize);
+        $bloberize = file_get_contents($data['tmp_name']);
+        $base64 = $data['name'] . "\\" . $data['type'] . "\\" . base64_encode($bloberize);
         return $base64;
     }
 

@@ -16,5 +16,4 @@ function Connect()
         die($response);
     }
 }
-
     // new PDO("mysql:host=hostname;dbname=database", username, password, options:optional);

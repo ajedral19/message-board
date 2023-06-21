@@ -1,67 +1,30 @@
 <?php
-class UserAuth
+class UserAuth extends UserAuthSchema
 {
-    private $connection;
-    private $data;
 
-    public function __construct($connection, $data)
+    public static function register($data)
     {
-        $this->data = $data;
-        $this->connection = $connection;
+        $registered = self::addUser($data);
+
+        if ($registered)
+            return Utils::sendErr('Unable to register new user');
+
+        return Utils::sendMsg('New user have been registered');
     }
 
-    /**
-     * @param object $cn database connection
-     * @param object $data user login data
-     * @return object
-     * @author #
-     */
-    public static function login($cn, $data)
+    public static function login($data)
     {
-        $query = "SELECT id, user_password as password FROM users WHERE user_name = :a";
-        $stmt = $cn->prepare($query);
-        $stmt->bindParam(':a', $data->username);
+        $user = self::getUser($data->username);
 
-        Execute($cn, $stmt);
+        if (!$user)
+            return Utils::sendErr("user $data->username does not exists");
 
-        $user = $stmt->fetch(PDO::FETCH_OBJ);
+        if (!password_verify($data->password, $user->password))
+            return Utils::sendErr("Your passsord is incorrect");
 
-        if (!$user) return ["user" => 1];
+        $user->id = Utils::shortenID($user->id);
+        unset($user->password);
 
-        if (!password_verify($data->password, $user->password)) return ["password" => 1];
-
-        $id = $user->id = Utils::shortenID($user->id);
-        
-        return ["id" => $id];
-    }
-
-    /**
-     * @param string $password
-     * @param string $repassword
-     * @return object
-     * @author #
-     */
-    public function register($password)
-    {
-        $query = "INSERT INTO users (first_name, last_name, user_name, user_email, user_password) VALUES (:a, :b, :c, :d, :e)";
-        $stmt = $this->connection->prepare($query);
-
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-        $stmt->bindParam(':a', $this->data->firstname);
-        $stmt->bindParam(':b', $this->data->lastname);
-        $stmt->bindParam(':c', $this->data->username);
-        $stmt->bindParam(':d', $this->data->email);
-        $stmt->bindParam(':e', $hashed_password);
-
-        Execute($this->connection, $stmt);
-
-        return !$stmt->fetch(PDO::FETCH_OBJ);
-    }
-
-    public function __destruct()
-    {
-        $this->connection = null;
-        $this->data = null;
+        return Utils::send([($user)]);
     }
 }

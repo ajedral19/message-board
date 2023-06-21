@@ -1,0 +1,12 @@
+schema - fetching of data from client/database
+model - structure of response data
+controller - filtering, receiving request, sending response to client
+utils - generic function
+
+handle session in controller.
+
+allow access to data if session is alive and if session id matches the session id in users table
+store user browser data, user system info in session
+
+inputs filtering must be done in controller
+outputs filtering must be done in model

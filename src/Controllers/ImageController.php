@@ -5,7 +5,7 @@ class ImageController
     {
     }
 
-    public static function upload($method, $view, $connection)
+    public static function upload($view)
     {
         $user = apache_request_headers()['user_id'];
         $image = $_FILES['image'];
@@ -13,28 +13,20 @@ class ImageController
         if (!$image['size'])
             return Error("No image to upload", 403);
 
-        $imageBLob = Utils::encode_image($image['tmp_name'], $image['name'], $image['type']);
-        $result = Image::upload($connection(), $user, $imageBLob);
+        $enconded_image = Utils::encode_image($image);
+        $response = Image::uplaod($user, $enconded_image);
 
-        if (!$result)
-            return Error('Unable to upload image', 403);
-
-        return $view(['image' => Utils::get_image_uri($user)]);
+        return $view($response);
     }
 
-    public static function getImage($method, $view, $connection)
+    public static function getImage($view)
     {
         $params = Utils::extracParams($_SERVER['QUERY_STRING']);
         $str = $params[0]['image'];
         $decoded_str = Utils::decode_id($str);
 
-        $image_data = Image::get_image($connection(), $decoded_str);
-        $photo = $image_data->photo;
+        $response = Image::get_image($decoded_str);
 
-        if (!$photo)
-            return Error('No photo', 401);
-
-        $data = Utils::decode_image($image_data->photo);
-        return $view($data);
+        return $view($response);
     }
 }
