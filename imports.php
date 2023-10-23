@@ -1,10 +1,15 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
+
 // imports
 require __DIR__ . '/src/utils/utils.php';
 require __DIR__ . '/src/Config/Database.php';
+
+// schemas
 require __DIR__ . '/src/Schema/UserSchama.php';
 require __DIR__ . '/src/Schema/UserAuthSchema.php';
 require __DIR__ . '/src/Schema/ImageSchema.php';
+require __DIR__ . '/src/Schema/FriendsSchema.php';
 require __DIR__ . '/src/Router.php';
 // models
 require __DIR__ . '/src/Models/User.php';

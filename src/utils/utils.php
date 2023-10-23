@@ -1,7 +1,7 @@
 <?php
 class ResponseHanler
 {
-    public static function sendMsg(string $msg, ?string $status = null)
+    protected static function send_msg(string $msg, ?string $status = null, ?int $status_code = null)
     {
         $response = [
             "status" => $status ? $status : 'ok',
@@ -9,20 +9,22 @@ class ResponseHanler
             "date" => date("Y-m-d h:m:s A")
         ];
 
+        http_response_code($status_code ?  $status_code : 200);
         return json_encode($response);
     }
 
-    public static function sendErr(?string $msg)
+    protected static function send_err(?string $msg, ?int $status_code = null)
     {
         $message = $msg ? $msg : "unknown failure of process";
-
-        return ResponseHanler::sendMsg($message, 'fail');
+        $status_code = $status_code ?  $status_code : 500;
+        http_response_code($status_code);
+        return self::send_msg($message, 'fail', $status_code);
     }
 
-    public static function send($data)
+    protected static function response($data)
     {
-        if (!$data || !count($data))
-            return ResponseHanler::sendErr('No data has found');
+        // if (!$data || !count($data))
+        //     return self::send_err('No data has found');
 
         $response = [
             "status" => "ok",
@@ -31,12 +33,38 @@ class ResponseHanler
             "date" => date("Y-m-d h:m:s A")
         ];
 
+        http_response_code(200);
         return json_encode($response);
     }
 }
 
 class Utils extends ResponseHanler
 {
+
+    /**
+     * @return
+     */
+    public static function sendMsg(string $msg, ?string $status = null, ?int $status_code = null)
+    {
+        return self::send_msg($msg, $status, $status_code);
+    }
+
+    /**
+     * @return
+     */
+    public static function sendErr(?string $msg, ?int $status_code = null)
+    {
+        return self::send_err($msg, $status_code);
+    }
+
+    /**
+     * @return
+     */
+    public static function send($data)
+    {
+        return self::response($data);
+    }
+
     /**
      * @return
      */

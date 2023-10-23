@@ -1,40 +1,43 @@
 <?php
 
-class Friends
+class Friends extends FriendsSchema
 {
-    public static function follow($connection, $id, $id_2)
+    public static function follow($follower_id, $following_id): string
     {
-        $query = "INSERT INTO friends(user_id, user_friend_id) SELECT u1.id, u2.id FROM users u1 JOIN users u2 ON u1.id LIKE CONCAT(:a, '%') WHERE u2.id LIKE CONCAT(:b, '%');";
-        $stmt = $connection->prepare($query);
-        $stmt->bindParam(':a', $id);
-        $stmt->bindParam(':b', $id_2);
+        // check is user to follow does exist
+        if (!User::doExists($following_id))
+            return Utils::sendErr("user " . $following_id . " does not exist");
 
-        Execute($connection, $stmt);
+        // check is user is already following the same user
+        if (self::isFollowing($follower_id, $following_id))
+            return Utils::sendErr("you are already following user " . $following_id . ".");
 
-        return !$stmt->fetch(PDO::FETCH_OBJ);
+        // finally, trigger follow action
+        self::addConnection($follower_id, $following_id);
+
+        // return true
+        return Utils::sendMsg("you followed user " . $following_id, 200);
     }
 
-    public static function followers($connection, $id)
+    // get user's followers
+    public static function followers($user_id)
     {
-        $query = "SELECT LEFT(users.id, 8) as id, users.first_name, users.last_Name FROM users LEFT JOIN friends ON users.id = friends.user_id WHERE friends.user_friend_id LIKE CONCAT(:a, '%');";
-        $stmt = $connection->prepare($query);
-        $stmt->bindParam(':a', $id);
+        $followers = self::getConnections($user_id, 'followers');
 
-        Execute($connection, $stmt);
+        if (!$followers)
+            return Utils::send([]);
 
-        $followers = $stmt->fetchAll(PDO::FETCH_OBJ);
-        return $followers;
+        return Utils::send($followers);
     }
 
-    public static function following($connection, $id)
+    // get user's following
+    public static function following($user_id)
     {
-        $query = "SELECT LEFT(users.id, 8) as id, users.first_name, users.last_Name FROM users LEFT JOIN friends ON users.id = friends.user_friend_id WHERE friends.user_id LIKE CONCAT(:a, '%');";
-        $stmt = $connection->prepare($query);
-        $stmt->bindParam(':a', $id);
+        $following = self::getConnections($user_id, 'following');
 
-        Execute($connection, $stmt);
+        if (!$following)
+            return Utils::send([]);
 
-        $following = $stmt->fetchAll(PDO::FETCH_OBJ);
-        return $following;
+        return Utils::send($following);
     }
 }

@@ -31,7 +31,7 @@ class User extends UserSchema
     }
 
     // generic method
-    public static function doExists($identifier, string $param = "username" | "email")
+    public static function doExists($identifier, ?string $param = "username" | "email")
     {
         $col = null;
 
@@ -41,8 +41,8 @@ class User extends UserSchema
         if ($param === 'email')
             $col = "user_email";
 
-        if (!$col)
-            return false;
+        // if (!$col)
+        //     return false;
 
         $data =  self::userExists($identifier, $col);
 

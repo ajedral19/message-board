@@ -5,31 +5,32 @@ class FriendsController
     /**
      * @return
      */
-    public static function follow($method, $view, $connection)
+    public static function follow($view)
     {
         $params = Utils::extracParams($_SERVER['QUERY_STRING']);
         $user = apache_request_headers()['user_id'];
 
-        $followed = Friends::follow($connection(), $user, $params[0]['id']);
-
-        if (!$followed)
-            return Error('You are already following', 403);
-
-        $response = ['following' => true];
-
-        return $view($response);
+        // check if user is attempting to follow himself/herself
+        if ($params[0]['id'] === $user)
+            return Error('Cannot Follow yourself', 500);
+            
+        // follow other user
+        $follow = Friends::follow($user, $params[0]['id']);
+        return $view($follow);
     }
 
     /**
      * @return array list of followers
      */
-    public static function followers($method, $view, $connection)
+    public static function followers($view)
     {
-        $id = apache_request_headers()['user_id'];
-        $followers = Friends::followers($connection(), $id);
+        if (!isset(apache_request_headers()['user_id']))
+            return $view(Utils::sendErr("unknown key"));
 
-        foreach ($followers as $key => $follower)
-            $follower->image = Utils::get_image_uri($follower->id);
+        $user_id = apache_request_headers()['user_id'];
+
+
+        $followers = Friends::followers($user_id);
 
         return $view($followers);
     }
@@ -37,13 +38,10 @@ class FriendsController
     /**
      * @return array list of following
      */
-    public static function following($method, $view, $connection)
+    public static function following($view)
     {
-        $id = apache_request_headers()['user_id'];
-        $following = Friends::following($connection(), $id);
-
-        foreach ($following as $key => $user)
-            $user->image = Utils::get_image_uri($user->id);
+        $user_id = apache_request_headers()['user_id'];
+        $following = Friends::following($user_id);
 
         return $view($following);
     }

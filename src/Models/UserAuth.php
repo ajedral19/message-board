@@ -1,4 +1,6 @@
 <?php
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 class UserAuth extends UserAuthSchema
 {
 
@@ -17,14 +19,29 @@ class UserAuth extends UserAuthSchema
         $user = self::getUser($data->username);
 
         if (!$user)
-            return Utils::sendErr("user $data->username does not exists");
+            return Utils::sendErr("user $data->username does not exists", 400);
 
         if (!password_verify($data->password, $user->password))
-            return Utils::sendErr("Your passsord is incorrect");
+            return Utils::sendErr("Your passsord is incorrect", 400);
+
+        // get user info and assign it to token
+        $key = "sample key";
+        $payload = [
+            'iss' => 'http://example.org',
+            'aud' => 'http://example.com',
+            'iat' => 1356999524,
+            'nbf' => 1357000000
+        ];
+
+        $jwt = JWT::encode($payload, $key, 'HS256');
+        $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
+        print($decoded);
 
         $user->id = Utils::shortenID($user->id);
         unset($user->password);
 
+        // set token to header
+        header("Authentication: Bearer SomeToken");
         return Utils::send([($user)]);
     }
 }

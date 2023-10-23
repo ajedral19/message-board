@@ -9,7 +9,7 @@ function Execute($cn, $stmt, ?array $params = null)
         $cn = null;
     } catch (PDOException $e) {
         $cn = null;
-        $response = ResponseHanler::sendErr($e->getMessage());
+        $response = Utils::sendErr($e->getMessage());
         die($response);
     }
 }

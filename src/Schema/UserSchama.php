@@ -1,5 +1,4 @@
 <?php
-
 class UserSchema
 {
     protected static function getUser($username)
@@ -12,7 +11,7 @@ class UserSchema
 
         Execute($connection, $stmt);
 
-        return $stmt->fetch(PDO::FETCH_OBJ);
+        return;
     }
 
     protected static function updateUser($data)
@@ -30,10 +29,13 @@ class UserSchema
         return $stmt->fetch(PDO::FETCH_OBJ);
     }
 
-    protected static function userExists($user, $column)
+    protected static function userExists($user, $column = null)
     {
         $connection = Connect();
         $query = "SELECT CASE WHEN EXISTS(SELECT 1 FROM users WHERE $column = :a ) THEN 1 ELSE 0 END AS result";
+        if (!$column)
+            $query = "SELECT CASE WHEN EXISTS(SELECT 1 FROM users WHERE id LIKE CONCAT(:a, '%') ) THEN 1 ELSE 0 END AS result";
+
         $stmt = $connection->prepare($query);
 
         $stmt->bindParam(':a', $user);

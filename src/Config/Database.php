@@ -12,7 +12,7 @@ function Connect()
         return new PDO($dsn, $user, $pword);
     } catch (PDOException $e) {
         Utils::log($e->getMessage());
-        $response = Utils::sendErr('Server Error');
+        $response = Utils::sendErr('Server Error', 500);
         die($response);
     }
 }
