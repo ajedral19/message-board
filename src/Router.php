@@ -76,6 +76,7 @@ class Router
             $uri = preg_replace("/=\w+/", '', $matches[1]);
             if ($route['uri'] == $uri && $route['method'] == $_SERVER['REQUEST_METHOD']) {
                 $this->call($route['uri'], $route['module']['controller'], $route['module']['action'], $route['view']);
+                die();
                 return;
             }
         }
